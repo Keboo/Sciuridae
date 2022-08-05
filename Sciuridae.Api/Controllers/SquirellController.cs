@@ -17,11 +17,6 @@ public class SquirrelController : ControllerBase
     [HttpGet("{appName}/{channel}/{fileName}")]
     public async Task<IActionResult> Get(string appName, string channel, string fileName)
     {
-        string? rootRepo = AppMap.GetRepo(appName);
-        if (rootRepo is null)
-        {
-            return NotFound();
-        }
         if (string.Equals("RELEASES", fileName, StringComparison.OrdinalIgnoreCase))
         {
             Uri? manifestUri = await AppInformation.GetFile(appName, channel, "RELEASES");

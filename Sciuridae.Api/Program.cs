@@ -14,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<ProviderFactory>();
+//TODO: Config Uri
 builder.Services.AddScoped(x => new TableServiceClient(new Uri("https://sciuridae.table.core.windows.net/"), new DefaultAzureCredential()));
 builder.Services.AddScoped<AppInformation>();
 

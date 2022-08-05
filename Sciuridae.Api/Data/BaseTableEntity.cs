@@ -14,13 +14,13 @@ public abstract record class BaseTableEntity : ITableEntity
         AppName = appName;
     }
 
-    string ITableEntity.PartitionKey
+    public string PartitionKey
     {
         get => AppName;
         set => AppName = value;
     }
     public abstract string RowKey { get; set; }
-    DateTimeOffset? ITableEntity.Timestamp { get; set; }
-    ETag ITableEntity.ETag { get; set; }
+    public DateTimeOffset? Timestamp { get; set; }
+    public ETag ETag { get; set; }
     public string AppName { get; private set; } = null!;
 }

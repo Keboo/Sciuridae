@@ -16,13 +16,17 @@ public class AppInformation
     private TableServiceClient Client { get; }
     private ProviderFactory ProviderFactory { get; }
 
-    public async Task AddRelease(string appName, string channel)
+    public async Task AddRelease(string appName, string channel, string version)
     {
         TableClient tableClient = Client.GetTableClient(Release.TableName);
-        await tableClient.AddEntityAsync(new Release(appName, "tag", channel, "version")
+        var release = new Release(appName, version, channel, version)
         {
-            
-        });
+            Provider = "github",
+            ProviderVersion = 1,
+            ProviderData = "{ \"RepositoryUrl\": \"https://github.com/Keboo/SimplyBudget\" }"
+        };
+
+        await tableClient.AddEntityAsync(release);
     }
 
     public async Task<Uri?> GetFile(string appName, string channel, string fileName, string? version = null)
@@ -31,7 +35,7 @@ public class AppInformation
             ? x => x.AppName == appName && x.Channel == channel 
             : x => x.AppName == appName && x.Channel == channel && x.Version == version;
 
-        Release ? release = await GetLatestRelease(query);
+        Release? release = await GetLatestRelease(query);
         if (release is not null && GetProvider(release) is { } provider)
         {
             return await provider.GetFile(release, fileName);
