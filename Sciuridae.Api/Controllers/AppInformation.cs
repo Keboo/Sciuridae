@@ -32,8 +32,8 @@ public class AppInformation
     public async Task<Uri?> GetFile(string appName, string channel, string fileName, string? version = null)
     {
         Expression<Func<Release, bool>> query = version is null
-            ? x => x.AppName == appName && x.Channel == channel 
-            : x => x.AppName == appName && x.Channel == channel && x.Version == version;
+            ? x => x.AppName == appName 
+            : x => x.AppName == appName && x.Version == version;
 
         Release? release = await GetLatestRelease(query);
         if (release is not null && GetProvider(release) is { } provider)
@@ -57,7 +57,7 @@ public class AppInformation
             }
             else
             {
-                if (VersionComparer.Instance.Compare(latest, item) >= 0)
+                if (VersionComparer.Instance.Compare(latest, item) <= 0)
                 {
                     latest = item;
                 }
