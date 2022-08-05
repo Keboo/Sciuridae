@@ -5,24 +5,34 @@ namespace Sciuridae.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class SquirellController : ControllerBase
+public class SquirrelController : ControllerBase
 {
-    [HttpGet("{appName}/{channel}/{fileName}{query?}")]
-    public IActionResult Get(string appName, string channel, string fileName)
+    private AppInformation AppInformation { get; }
+
+    public SquirrelController(AppInformation appInformation)
     {
-        //https://localhost:7155/Squirell/SimplyBudget/production/RELEASES
-        //https://localhost:7155/Squirrel/SimplyBudget/production/RELEASES?arch=x64&os=windows&id=SimplyBudget&localVersion=1.0.1
+        AppInformation = appInformation ?? throw new ArgumentNullException(nameof(appInformation));
+    }
+
+    [HttpGet("{appName}/{channel}/{fileName}")]
+    public async Task<IActionResult> Get(string appName, string channel, string fileName)
+    {
         string? rootRepo = AppMap.GetRepo(appName);
         if (rootRepo is null)
         {
             return NotFound();
         }
-        Uri fileUri = new Uri(rootRepo, UriKind.Absolute);
         if (string.Equals("RELEASES", fileName, StringComparison.OrdinalIgnoreCase))
         {
-            //https://github.com/Keboo/SimplyBudget/releases/latest/download/RELEASES
-            fileUri = new Uri(fileUri, "releases/latest/download/RELEASES");
-            return Redirect(fileUri.AbsoluteUri);
+            Uri? manifestUri = await AppInformation.GetFile(appName, channel, "RELEASES");
+            if (manifestUri is not null)
+            {
+                return Redirect(manifestUri.AbsoluteUri);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
         var match = Regex.Match(fileName, @".+-(?<Version>\d+\.\d\.\d)-.+");
         if (!match.Success)
@@ -30,9 +40,12 @@ public class SquirellController : ControllerBase
             //TODO useful error
             return BadRequest();
         }
-        //https://github.com/Keboo/SimplyBudget/releases/download/0.0.0/SimplyBudget-1.0.0-full.nupkg
         string version = match.Groups["Version"].Value;
-        fileUri = new Uri(fileUri, $"releases/download/{version}/{fileName}");
+        Uri? fileUri = await AppInformation.GetFile(appName, channel, fileName, version);
+        if (fileUri is null)
+        {
+            return NotFound();
+        }
         return Redirect(fileUri.AbsoluteUri);
     }
 }
