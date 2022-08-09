@@ -16,7 +16,7 @@ public class GitHubProvider : IAppDataProvider
 
     public Task<Uri?> GetFile(Release release, string fileName)
     {
-        Uri fileUri = new(GetRepoUri(), $"releases/{release.Tag}/download/{fileName}");
+        Uri fileUri = new(GetRepoUri(), $"releases/download/{release.Tag}/{fileName}");
         return Task.FromResult<Uri?>(fileUri);
     }
 

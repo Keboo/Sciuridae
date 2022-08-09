@@ -19,11 +19,12 @@ public class AppInformation
     public async Task AddRelease(string appName, string channel, string version)
     {
         TableClient tableClient = Client.GetTableClient(Release.TableName);
+        //TODO: Ensure repository URL ends with /
         var release = new Release(appName, version, channel, version)
         {
             Provider = "github",
             ProviderVersion = 1,
-            ProviderData = "{ \"RepositoryUrl\": \"https://github.com/Keboo/SimplyBudget\" }"
+            ProviderData = "{ \"RepositoryUrl\": \"https://github.com/Keboo/SimplyBudget/\" }"
         };
 
         await tableClient.AddEntityAsync(release);
