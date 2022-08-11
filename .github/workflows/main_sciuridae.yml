@@ -67,3 +67,19 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_19C055139850401EA6A7A2E8959FCC4D }}
           package: .
+
+  deploy-nuget:
+    if: ${{ github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'NuGetDeploy'
+    
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: NuGet
+          
+      - name: Push NuGet
+        run: dotnet nuget push ${{ github.workspace }}/*nupkg --source https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate
