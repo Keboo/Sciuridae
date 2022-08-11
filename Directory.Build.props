@@ -1,0 +1,32 @@
+<Project>
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <!--<WarningsAsErrors>true</WarningsAsErrors>
+    <AnalysisLevel>5</AnalysisLevel>-->
+    <LangVersion>10.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Title>Sciuridae</Title>
+    <Description>A library for automating the build and distrobution of Clowd.Squirrel installers</Description>
+    <Copyright>Copyright 2022</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <!--<PackageIcon>icon.png</PackageIcon>-->
+    <RepositoryUrl>https://github.com/Keboo/Sciuridae</RepositoryUrl>
+    <Authors>Keboo</Authors>
+  </PropertyGroup>
+
+  <!-- Source Link Properties -->
+  <PropertyGroup>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSource>true</EmbedUntrackedSource>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+</Project>

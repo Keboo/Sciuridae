@@ -22,6 +22,4 @@ public class GitHubProvider : IAppDataProvider
 
     private Uri GetRepoUri()
         => new (Data.RepositoryUrl, UriKind.Absolute);
-
-    
 }

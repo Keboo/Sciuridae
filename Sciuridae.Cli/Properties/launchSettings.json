@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Sciuridae.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "latest-version -a SimplyBudget --server-url https://localhost:7155/ --api-key <API_KEY_HERE>"
+      //"commandLineArgs": "download -a SimplyBudget --server-url https://localhost:7155/"
+    }
+  }
+}

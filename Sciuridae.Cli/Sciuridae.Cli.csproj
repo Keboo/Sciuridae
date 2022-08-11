@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+
+    <PublishRelease>true</PublishRelease>
+    <PublishDir>publish</PublishDir>
+    <PackageId>Sciuridae</PackageId>
+    <BuildOutputTargetFolder>build</BuildOutputTargetFolder>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Data.Tables" Version="12.6.1" />
+    <PackageReference Include="Azure.Identity" Version="1.6.1" />
+    <PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1">
+      <PrivateAssets>contentfiles;analyzers;build;compile;runtime;native;buildMultitargeting;buildTransitive</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Sciuridae.targets" Pack="true" PackagePath="build\Sciuridae.targets" />
+    <None Include="publish/**/*" Pack="true" PackagePath="tools\any\sciuridae" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Sciuridae.Api\Auth\HmacHelper.cs" Link="HmacHelper.cs" />
+    <Compile Include="..\Sciuridae.Api\Controllers\UpdateAppRequest.cs" Link="UpdateAppRequest.cs" />
+    <Compile Include="..\Sciuridae.Api\Data\App.cs" Link="Data\App.cs" />
+    <Compile Include="..\Sciuridae.Api\Data\BaseTableEntity.cs" Link="Data\BaseTableEntity.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+  </PropertyGroup>
+
+  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+    <ItemGroup>
+      <!-- Filter out unnecessary files -->
+      <_ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')-&gt;WithMetadataValue('PrivateAssets', 'All'))" />
+    </ItemGroup>
+
+    <!-- Print batches for debug purposes -->
+    <Message Text="Batch for .nupkg: ReferenceCopyLocalPaths = @(_ReferenceCopyLocalPaths), ReferenceCopyLocalPaths.DestinationSubDirectory = %(_ReferenceCopyLocalPaths.DestinationSubDirectory) Filename = %(_ReferenceCopyLocalPaths.Filename) Extension = %(_ReferenceCopyLocalPaths.Extension)" Importance="High" Condition="'@(_ReferenceCopyLocalPaths)' != ''" />
+
+    <ItemGroup>
+      <!-- Add file to package with consideration of sub folder. If empty, the root folder is chosen. -->
+      <BuildOutputInPackage Include="@(_ReferenceCopyLocalPaths)" TargetPath="%(_ReferenceCopyLocalPaths.DestinationSubDirectory)" />
+    </ItemGroup>
+  </Target>
+</Project>

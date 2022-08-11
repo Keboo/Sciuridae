@@ -1,10 +1,11 @@
-﻿using Azure.Data.Tables;
-
-namespace Sciuridae.Api.Data;
+﻿namespace Sciuridae.Api.Data;
 
 public record class App : BaseTableEntity
 {
     public const string TableName = "Apps";
+
+    public App()
+    { }
 
     public App(string appName)
         : base(appName)
@@ -12,7 +13,9 @@ public record class App : BaseTableEntity
 
     public override string RowKey
     {
-        get => ((ITableEntity)this).PartitionKey;
-        set => ((ITableEntity)this).PartitionKey = value;
+        get => PartitionKey;
+        set => PartitionKey = value;
     }
+
+    public string? ApiKey { get; set; }
 }

@@ -2,6 +2,8 @@
 using Sciuridae.Api.Data;
 using Sciuridae.Api.Providers;
 using System.Linq.Expressions;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Sciuridae.Api.Controllers;
 
@@ -16,32 +18,52 @@ public class AppInformation
     private TableServiceClient Client { get; }
     private ProviderFactory ProviderFactory { get; }
 
-    public async Task AddRelease(string appName, string channel, string version)
+    public async Task<App?> Register(string appName)
     {
-        TableClient tableClient = Client.GetTableClient(Release.TableName);
-        //TODO: Ensure repository URL ends with /
-        var release = new Release(appName, version, channel, version)
+        TableClient tableClient = Client.GetTableClient(App.TableName);
+
+        using var cryptoProvider = RandomNumberGenerator.Create();
+        byte[] secretKeyByteArray = new byte[32]; //256 bit
+        cryptoProvider.GetBytes(secretKeyByteArray);
+        var apiKey = Convert.ToBase64String(secretKeyByteArray);
+
+        var app = new App(appName)
         {
-            Provider = "github",
-            ProviderVersion = 1,
-            ProviderData = "{ \"RepositoryUrl\": \"https://github.com/Keboo/SimplyBudget/\" }"
+            ApiKey = apiKey
         };
 
-        await tableClient.AddEntityAsync(release);
+        var response = await tableClient.AddEntityAsync(app);
+        if (response.IsError)
+        {
+            return null;
+        }
+        return app;
+    }
+
+    public async Task<bool> AddRelease(Release release)
+    {
+        TableClient tableClient = Client.GetTableClient(Release.TableName);
+        var response = await tableClient.AddEntityAsync(release);
+        return !response.IsError;
     }
 
     public async Task<Uri?> GetFile(string appName, string channel, string fileName, string? version = null)
     {
-        Expression<Func<Release, bool>> query = version is null
-            ? x => x.AppName == appName 
-            : x => x.AppName == appName && x.Version == version;
-
-        Release? release = await GetLatestRelease(query);
+        Release? release = await GetRelease(appName, channel, version);
         if (release is not null && GetProvider(release) is { } provider)
         {
             return await provider.GetFile(release, fileName);
         }
         return null;
+    }
+
+    public async Task<Release?> GetRelease(string appName, string channel, string? version = null)
+    {
+        Expression<Func<Release, bool>> query = version is null
+            ? x => x.AppName == appName
+            : x => x.AppName == appName && x.Version == version;
+
+        return await GetLatestRelease(query);
     }
 
     private async Task<Release?> GetLatestRelease(Expression<Func<Release, bool>> query)
@@ -66,6 +88,18 @@ public class AppInformation
         }
         
         return latest;
+    }
+
+    private async Task<bool> ValidateApiKey(string appName, string content, string signature)
+    {
+        TableClient tableClient = Client.GetTableClient(App.TableName);
+        App? app = tableClient.GetEntity<App>(appName, appName);
+        if (app is null || string.IsNullOrWhiteSpace(app.ApiKey)) return false;
+
+        using HMAC hmac = new HMACSHA256();
+        hmac.Key = Convert.FromBase64String(app.ApiKey);
+        string serverSignature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(content)));
+        return string.Equals(signature, serverSignature);
     }
 
     private IAppDataProvider? GetProvider(Release release)
