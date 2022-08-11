@@ -3,7 +3,6 @@ using Sciuridae.Api.Data;
 using Sciuridae.Api.Providers;
 using System.Linq.Expressions;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Sciuridae.Api.Controllers;
 
@@ -88,18 +87,6 @@ public class AppInformation
         }
         
         return latest;
-    }
-
-    private async Task<bool> ValidateApiKey(string appName, string content, string signature)
-    {
-        TableClient tableClient = Client.GetTableClient(App.TableName);
-        App? app = tableClient.GetEntity<App>(appName, appName);
-        if (app is null || string.IsNullOrWhiteSpace(app.ApiKey)) return false;
-
-        using HMAC hmac = new HMACSHA256();
-        hmac.Key = Convert.FromBase64String(app.ApiKey);
-        string serverSignature = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(content)));
-        return string.Equals(signature, serverSignature);
     }
 
     private IAppDataProvider? GetProvider(Release release)

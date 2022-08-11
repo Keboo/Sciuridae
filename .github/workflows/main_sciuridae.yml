@@ -25,14 +25,26 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: dotnet publish Api
+        run: dotnet publish Sciuridae.Api/Sciuridae.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/Sciuridae.Api
 
-      - name: Upload artifact for deployment job
+      - name: dotnet publish Cli
+        run: dotnet publish Sciuridae.Cli/Sciuridae.Cli.csproj -c Release
+
+      - name: dotnet pack NuGet
+        run: dotnet pack Sciuridae.Cli/Sciuridae.Cli.csproj -c Release -o ${{env.DOTNET_ROOT}}/Sciuridae.NuGet
+
+      - name: Upload API for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{env.DOTNET_ROOT}}/Sciuridae.Api
+       
+      - name: Upload NuGet package
+        uses: actions/upload-artifact@v2
+        with:
+          name: NuGet
+          path: ${{env.DOTNET_ROOT}}/Sciuridae.NuGet
 
   deploy:
     runs-on: ubuntu-latest
