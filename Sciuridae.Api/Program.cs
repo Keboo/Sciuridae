@@ -81,12 +81,16 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    string clientSecret = builder.Configuration.GetSection("Swagger").GetValue<string>("ClientSecret");
+    var swaggerSection = builder.Configuration.GetSection("Swagger");
+    string clientSecret = swaggerSection.GetValue<string>("ClientSecret");
+    string redirectUri = swaggerSection.GetValue<string>("RedirectUri");
+
+    options.EnableDeepLinking();
     options.EnableTryItOutByDefault();
     options.OAuthAppName("Sciuridae");
     options.OAuthClientId(aadClientId);
     options.OAuthClientSecret(clientSecret);
-    options.OAuth2RedirectUrl("https://localhost:7155/swagger/oauth2-redirect.html");
+    options.OAuth2RedirectUrl(redirectUri);
     options.OAuthUseBasicAuthenticationWithAccessCodeGrant();
 });
 
