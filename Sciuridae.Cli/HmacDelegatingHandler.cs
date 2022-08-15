@@ -1,8 +1,4 @@
 ﻿using Sciuridae.Api.Auth;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Text;
-using System.Web;
 
 namespace Sciuridae.Cli;
 

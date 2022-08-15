@@ -3,10 +3,10 @@ using Azure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
-using Sciuridae.Api.Controllers;
 using Sciuridae.Api.Data;
 using Sciuridae.Api.Providers;
 using Sciuridae.Api.Auth;
+using Sciuridae.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 

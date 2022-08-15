@@ -4,7 +4,7 @@ using Sciuridae.Api.Providers;
 using System.Linq.Expressions;
 using System.Security.Cryptography;
 
-namespace Sciuridae.Api.Controllers;
+namespace Sciuridae.Api;
 
 public class AppInformation
 {
@@ -85,7 +85,7 @@ public class AppInformation
                 }
             }
         }
-        
+
         return latest;
     }
 

@@ -9,17 +9,17 @@
     <SciuridaePackageVersion Condition="'$(SciuridaePackageVersion)' == ''">$(PackageVersion)</SciuridaePackageVersion>
     <SciuridaePackageVersion Condition="'$(SciuridaePackageVersion)' == ''">$(Version)</SciuridaePackageVersion>
 
-    <SciuridaeOutputDirectory Condition="'$(SolutionDir)' != ''">$(SolutionDir)Releases</SciuridaeOutputDirectory>
-    <SciuridaeOutputDirectory Condition="'$(SciuridaeOutputDirectory)' == ''">Releases</SciuridaeOutputDirectory>
+    <SciuridaeOutputDirectory Condition="'$(SolutionDir)' != ''">$(SolutionDir)SciuridaeReleases</SciuridaeOutputDirectory>
+    <SciuridaeOutputDirectory Condition="'$(SciuridaeOutputDirectory)' == ''">SciuridaeReleases</SciuridaeOutputDirectory>
     <SciuridaeCliPath>$(MSBuildThisFileDirectory)..\tools\any\sciuridae\Sciuridae.Cli.exe</SciuridaeCliPath>
     <SciuridaePublishedAppDirectory>$([MSBuild]::NormalizeDirectory($(ProjectDir)$(PublishDir)))</SciuridaePublishedAppDirectory>
     
-    <ClowdSquirrelPath>$(USERPROFILE)\.nuget\packages\clowd.squirrel\2.9.42\tools\Squirrel.exe</ClowdSquirrelPath>
+    <ClowdSquirrelPath>$(PkgClowd_Squirrel)\tools\Squirrel.exe</ClowdSquirrelPath>
     <ClowdSquirrelFramework Condition="'$(ClowdSquirrelFramework)' == ''">net6,vcredist143-x86</ClowdSquirrelFramework>
   </PropertyGroup>
 
   <Target Name="SciuridaePublish" AfterTargets="SciuridaeBuildInstaller" Condition="'$(SciuridaeApiKey)' != '' And '$(SciuridaeAppName)' != ''">
-    <Exec Condition="'$(SciuridaeApiKey)' != ''" Command="&quot;$(SciuridaeCliPath)&quot; add-release github --app-name &quot;$(SciuridaeAppName)&quot; --app-version &quot;$(SciuridaePackageVersion)&quot; --repository &quot;$(SciuridaeRepositoryUrl)&quot; --api-key &quot;$(SciuridaeApiKey)&quot; --server-url &quot;$(SciuridaeServerUrl)&quot;" />
+    <Exec Command="&quot;$(SciuridaeCliPath)&quot; add-release github --app-name &quot;$(SciuridaeAppName)&quot; --app-version &quot;$(SciuridaePackageVersion)&quot; --repository &quot;$(SciuridaeRepositoryUrl)&quot; --api-key &quot;$(SciuridaeApiKey)&quot; --server-url &quot;$(SciuridaeServerUrl)&quot;" />
   </Target>
   
   <Target Name="SciuridaeBuildInstaller" AfterTargets="Publish" Condition="'$(SciuridaeAppName)' != ''">
@@ -29,7 +29,7 @@
     <Exec Command="&quot;$(SciuridaeCliPath)&quot; download --app-name &quot;$(SciuridaeAppName)&quot; --output-dir &quot;$(SciuridaeOutputDirectory)&quot; --server-url &quot;$(SciuridaeServerUrl)&quot;" />
 
     <ItemGroup>
-      <!-- Grab all downloaded file, excluding the manifest -->
+      <!-- Grab all downloaded files, excluding the manifest -->
       <DownloadedFiles Include="$(SciuridaeOutputDirectory)\**" />
       <DownloadedFiles Remove="$(SciuridaeOutputDirectory)\RELEASES" />
     </ItemGroup>

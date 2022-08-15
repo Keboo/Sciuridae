@@ -148,6 +148,12 @@ Command updateCommand = new("add-release")
     githubCommand
 };
 
+
+Command generateActions = new("generate-action")
+{
+
+};
+
 RootCommand rootCommand = new()
 {
     downloadCommand,

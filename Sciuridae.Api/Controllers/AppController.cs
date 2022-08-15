@@ -28,7 +28,6 @@ public class AppController : ControllerBase
         App? app = await AppInformation.Register(appName);
         if (app is not null)
         {
-            //TODO: really want to protect this better....
             return Ok(app.ApiKey);
         }
         return base.Problem("Failed to register app");
