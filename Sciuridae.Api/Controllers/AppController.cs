@@ -82,7 +82,13 @@ public class AppController : ControllerBase
         Release? release = await AppInformation.GetRelease(appName, channel, version);
         if (release is null)
         {
-            return NotFound($"No release found for {appName} on channel {channel} @v{version}");
+            //Check if this is the first release of an app
+            if (await AppInformation.GetApp(appName) is null)
+            {
+                return NotFound($"No release found for {appName} on channel {channel} @v{version}");
+            }
+            //The app exists but there are no releases
+            return Ok(Array.Empty<string>());
         }
 
         Uri? manifestUri = await AppInformation.GetFile(release.AppName, release.Channel, "RELEASES");

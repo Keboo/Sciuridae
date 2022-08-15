@@ -65,6 +65,12 @@ public class AppInformation
         return await GetLatestRelease(query);
     }
 
+    public async Task<App?> GetApp(string appName)
+    {
+        TableClient tableClient = Client.GetTableClient(App.TableName);
+        return await tableClient.GetEntityAsync<App>(appName, appName);
+    }
+
     private async Task<Release?> GetLatestRelease(Expression<Func<Release, bool>> query)
     {
         TableClient tableClient = Client.GetTableClient(Release.TableName);
