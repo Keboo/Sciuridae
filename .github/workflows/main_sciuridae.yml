@@ -29,7 +29,7 @@ jobs:
         run: dotnet publish Sciuridae.Api/Sciuridae.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/Sciuridae.Api
 
       - name: dotnet publish Cli
-        run: dotnet publish Sciuridae.Cli/Sciuridae.Cli.csproj -c Release
+        run: dotnet publish Sciuridae.Cli/Sciuridae.Cli.csproj -c Release -r win-x64 --self-contained
 
       - name: dotnet pack NuGet
         run: dotnet pack Sciuridae.Cli/Sciuridae.Cli.csproj -c Release -o ${{env.DOTNET_ROOT}}/Sciuridae.NuGet

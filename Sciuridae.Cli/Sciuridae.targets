@@ -11,7 +11,7 @@
 
     <SciuridaeOutputDirectory Condition="'$(SolutionDir)' != ''">$(SolutionDir)SciuridaeReleases</SciuridaeOutputDirectory>
     <SciuridaeOutputDirectory Condition="'$(SciuridaeOutputDirectory)' == ''">SciuridaeReleases</SciuridaeOutputDirectory>
-    <SciuridaeCliPath>$(MSBuildThisFileDirectory)..\tools\any\sciuridae\Sciuridae.Cli.exe</SciuridaeCliPath>
+    <SciuridaeCliPath>$(MSBuildThisFileDirectory)..\tools\win\sciuridae\Sciuridae.Cli.exe</SciuridaeCliPath>
     <SciuridaePublishedAppDirectory>$([MSBuild]::NormalizeDirectory($(ProjectDir)$(PublishDir)))</SciuridaePublishedAppDirectory>
     
     <ClowdSquirrelPath>$(PkgClowd_Squirrel)\tools\Squirrel.exe</ClowdSquirrelPath>

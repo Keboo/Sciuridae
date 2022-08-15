@@ -5,7 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
 
-    <Version>0.0.2</Version>
+    <Version>0.0.3-ci1</Version>
     <PublishRelease>true</PublishRelease>
     <PublishDir>publish</PublishDir>
     <PackageId>Sciuridae</PackageId>
@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <None Include="Sciuridae.targets" Pack="true" PackagePath="build\Sciuridae.targets" />
-    <None Include="publish/**/*" Pack="true" PackagePath="tools\any\sciuridae" />
+    <None Include="publish/**/*" Pack="true" PackagePath="tools\win\sciuridae" />
   </ItemGroup>
 
   <ItemGroup>
