@@ -28,6 +28,7 @@ Option<Uri> serverUrlOption = new("--server-url", () => new Uri("https://sciurid
     IsRequired = true
 };
 Option<DirectoryInfo> outputDirectoryOption = new(new[] { "--output-dir", "-o" }, () => new("./Releases"));
+Option<string> setupFileNameOption = new("--setup-file");
 
 Command downloadCommand = new("download")
 {
@@ -77,7 +78,6 @@ Command latestVersionCommand = new("latest-version")
 {
     appNameOption,
     channelOption,
-    apiKeyOption,
     serverUrlOption
 };
 latestVersionCommand.SetHandler(async (InvocationContext ctx) =>
@@ -111,6 +111,7 @@ Command githubCommand = new("github")
     appNameOption,
     versionOption,
     channelOption,
+    setupFileNameOption,
     gitTagOption,
     repositoryOption,
     apiKeyOption,
@@ -121,6 +122,7 @@ githubCommand.SetHandler(async (InvocationContext ctx) =>
     string? appName = ctx.ParseResult.GetValueForOption(appNameOption);
     string? version = ctx.ParseResult.GetValueForOption(versionOption);
     string? channel = ctx.ParseResult.GetValueForOption(channelOption);
+    string? setupFileName = ctx.ParseResult.GetValueForOption(setupFileNameOption);
     string? gitTag = ctx.ParseResult.GetValueForOption(gitTagOption);
     Uri? serverUrl = ctx.ParseResult.GetValueForOption(serverUrlOption);
     string? apiKey = ctx.ParseResult.GetValueForOption(apiKeyOption);
@@ -129,7 +131,7 @@ githubCommand.SetHandler(async (InvocationContext ctx) =>
     string endpoint = $"{serverUrl!.AbsoluteUri}App/release/github/v1";
 
     HttpClient client = new(new HmacDelegatingHandler(appName!, apiKey!));
-    UpdateGithubAppRequest request = new(appName!, version!, repositoryUrl!, gitTag, channel);
+    UpdateGithubAppRequest request = new(appName!, version!, repositoryUrl!, gitTag, channel, setupFileName);
     var response = await client.PostAsJsonAsync(new Uri(endpoint, UriKind.Absolute), request);
     if (!response.IsSuccessStatusCode)
     {
@@ -146,12 +148,6 @@ githubCommand.SetHandler(async (InvocationContext ctx) =>
 Command updateCommand = new("add-release")
 {
     githubCommand
-};
-
-
-Command generateActions = new("generate-action")
-{
-
 };
 
 RootCommand rootCommand = new()

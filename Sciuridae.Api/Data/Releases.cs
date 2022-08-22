@@ -7,12 +7,13 @@ public record class Release : BaseTableEntity
     public Release()
     { }
     
-    public Release(string appName, string tag, string channel, string version)
+    public Release(string appName, string tag, string channel, string version, string setupFile)
         : base(appName)
     {
         Tag = tag;
         Channel = channel;
         Version = version;
+        SetupFile = setupFile;
     }
 
     public override string RowKey
@@ -24,6 +25,7 @@ public record class Release : BaseTableEntity
     public string Tag { get; set; } = null!;
     public string Channel { get; set; } = null!;
     public string Version { get; set; } = null!;
+    public string SetupFile { get; set; } = null!;
     public string? Provider { get; set; }
     public int ProviderVersion { get; set; }
     public string? ProviderData { get; set; }

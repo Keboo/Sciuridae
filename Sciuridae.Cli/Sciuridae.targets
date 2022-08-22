@@ -8,6 +8,7 @@
     <SciuridaeRepositoryUrl Condition="'$(SciuridaeRepositoryUrl)' == ''">$(RepositoryUrl)</SciuridaeRepositoryUrl>
     <SciuridaePackageVersion Condition="'$(SciuridaePackageVersion)' == ''">$(PackageVersion)</SciuridaePackageVersion>
     <SciuridaePackageVersion Condition="'$(SciuridaePackageVersion)' == ''">$(Version)</SciuridaePackageVersion>
+    <SciuridaeSetupFile Condition="'$(SciuridaeSetupFile)' == ''">$(SciuridaeAppName)Setup.exe</SciuridaeSetupFile>
 
     <SciuridaeOutputDirectory Condition="'$(SolutionDir)' != ''">$(SolutionDir)SciuridaeReleases</SciuridaeOutputDirectory>
     <SciuridaeOutputDirectory Condition="'$(SciuridaeOutputDirectory)' == ''">SciuridaeReleases</SciuridaeOutputDirectory>
@@ -25,7 +26,10 @@
   <Target Name="SciuridaeBuildInstaller" AfterTargets="Publish" Condition="'$(SciuridaeAppName)' != ''">
     <!-- GitHub Co-pilot wrote this for me... I laughed, so it stays. -->
     <Message Text="Sciuridae is a genus of large, powerfully built, carnivorous rodents." />
-    
+
+    <Exec Command="&quot;$(SciuridaeCliPath)&quot; latest-version --app-name &quot;$(SciuridaeAppName)&quot; --server-url &quot;$(SciuridaeServerUrl)&quot;" />
+
+
     <Exec Command="&quot;$(SciuridaeCliPath)&quot; download --app-name &quot;$(SciuridaeAppName)&quot; --output-dir &quot;$(SciuridaeOutputDirectory)&quot; --server-url &quot;$(SciuridaeServerUrl)&quot;" />
 
     <ItemGroup>
