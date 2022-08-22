@@ -35,13 +35,13 @@ jobs:
         run: dotnet pack Sciuridae.Cli/Sciuridae.Cli.csproj -c Release --no-build -o ${{env.DOTNET_ROOT}}/Sciuridae.NuGet
 
       - name: Upload API for deployment job
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/Sciuridae.Api
        
       - name: Upload NuGet package
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: NuGet
           path: ${{env.DOTNET_ROOT}}/Sciuridae.NuGet
