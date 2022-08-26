@@ -8,7 +8,7 @@
     <DebugType>embedded</DebugType>
     <IncludeSymbols>false</IncludeSymbols>
     
-    <Version>0.0.3-ci2</Version>
+    <Version>0.0.3-ci3</Version>
     <PublishRelease>true</PublishRelease>
     <PublishDir>publish</PublishDir>
     <PackageId>Sciuridae</PackageId>
