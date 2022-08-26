@@ -21,17 +21,29 @@ public class AppInformation
     {
         TableClient tableClient = Client.GetTableClient(App.TableName);
 
-        using var cryptoProvider = RandomNumberGenerator.Create();
-        byte[] secretKeyByteArray = new byte[32]; //256 bit
-        cryptoProvider.GetBytes(secretKeyByteArray);
-        var apiKey = Convert.ToBase64String(secretKeyByteArray);
-
+        string apiKey = GenerateApiKey();
         var app = new App(appName)
         {
             ApiKey = apiKey
         };
 
         var response = await tableClient.AddEntityAsync(app);
+        if (response.IsError)
+        {
+            return null;
+        }
+        return app;
+    }
+
+    public async Task<App?> CycleKey(string appName)
+    {
+        TableClient tableClient = Client.GetTableClient(App.TableName);
+
+        App? app = tableClient.GetEntity<App>(appName, appName);
+        if (app is null) return null;
+        app.ApiKey = GenerateApiKey();
+
+        var response = await tableClient.UpdateEntityAsync<App>(app, app.ETag);
         if (response.IsError)
         {
             return null;
@@ -102,5 +114,13 @@ public class AppInformation
             return null;
         }
         return ProviderFactory.CreateProvider(release.Provider, release.ProviderVersion, release.ProviderData);
+    }
+
+    private static string GenerateApiKey()
+    {
+        RandomNumberGenerator cryptoProvider = RandomNumberGenerator.Create();
+        byte[] secretKeyByteArray = new byte[32]; //256 bit
+        cryptoProvider.GetBytes(secretKeyByteArray);
+        return Convert.ToBase64String(secretKeyByteArray);
     }
 }

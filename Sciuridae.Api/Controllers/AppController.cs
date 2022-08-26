@@ -35,6 +35,20 @@ public class AppController : ControllerBase
         return base.Problem("Failed to register app");
     }
 
+    [HttpPost("regenerate-key")]
+    [Authorize]
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
+    public async Task<IActionResult> RegenerateKey(
+    [Required] string appName)
+    {
+        App? app = await AppInformation.CycleKey(appName);
+        if (app is not null)
+        {
+            return Ok(app.ApiKey);
+        }
+        return base.NotFound("Failed to find app");
+    }
+
     [HttpPost("release/github/v1")]
     [Authorize(HmacAuthenticationOptions.DefaultSchema, AuthenticationSchemes = HmacAuthenticationOptions.DefaultSchema)]
     public async Task<IActionResult> Update(UpdateGithubAppRequest request)
