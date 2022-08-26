@@ -91,7 +91,13 @@ public class AppController : ControllerBase
         {
             return Ok(release.Version);
         }
-        return NotFound();
+        //Check if this is the first release of an app
+        if (await AppInformation.GetApp(appName) is null)
+        {
+            return NotFound($"{appName} on channel {channel} not found");
+        }
+        //No releases but the app exists, allow empty string
+        return Ok("");
     }
 
     [HttpGet("download/{appName}")]

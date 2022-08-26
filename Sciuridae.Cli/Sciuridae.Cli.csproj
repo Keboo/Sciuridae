@@ -8,7 +8,7 @@
     <DebugType>embedded</DebugType>
     <IncludeSymbols>false</IncludeSymbols>
     
-    <Version>0.0.3-ci3</Version>
+    <Version>0.0.3-ci4</Version>
     <PublishRelease>true</PublishRelease>
     <PublishDir>publish</PublishDir>
     <PackageId>Sciuridae</PackageId>
@@ -16,8 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Data.Tables" Version="12.6.1" />
-    <PackageReference Include="Azure.Identity" Version="1.6.1" />
     <PackageReference Include="Clowd.Squirrel" Version="2.*" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1">
       <PrivateAssets>contentfiles;analyzers;build;compile;runtime;native;buildMultitargeting;buildTransitive</PrivateAssets>
