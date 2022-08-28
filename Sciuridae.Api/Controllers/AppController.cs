@@ -4,9 +4,7 @@ using Microsoft.Identity.Web.Resource;
 using Sciuridae.Api.Auth;
 using Sciuridae.Api.Data;
 using Squirrel;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Channels;
 
 namespace Sciuridae.Api.Controllers;
 
@@ -19,34 +17,6 @@ public class AppController : ControllerBase
     public AppController(AppInformation appInformation)
     {
         AppInformation = appInformation ?? throw new ArgumentNullException(nameof(appInformation));
-    }
-
-    [HttpPost("register")]
-    [Authorize]
-    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
-    public async Task<IActionResult> RegisterApp(
-        [Required]string appName)
-    {
-        App? app = await AppInformation.Register(appName);
-        if (app is not null)
-        {
-            return Ok(app.ApiKey);
-        }
-        return base.Problem("Failed to register app");
-    }
-
-    [HttpPost("regenerate-key")]
-    [Authorize]
-    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:Scopes")]
-    public async Task<IActionResult> RegenerateKey(
-    [Required] string appName)
-    {
-        App? app = await AppInformation.CycleKey(appName);
-        if (app is not null)
-        {
-            return Ok(app.ApiKey);
-        }
-        return base.NotFound("Failed to find app");
     }
 
     [HttpPost("release/github/v1")]
@@ -66,7 +36,7 @@ public class AppController : ControllerBase
         var release = new Release(
             request.AppName,
             request.Tag ?? request.Version,
-            request.Channel ?? "production",
+            request.Channel,
             request.Version,
             request.SetupFile ?? $"{request.AppName}Setup.exe")
         {
@@ -85,7 +55,7 @@ public class AppController : ControllerBase
     [HttpGet("version/{appName}")]
     public async Task<IActionResult> Version(string appName, [FromQuery]string? channel = null)
     {
-        Release? release = await AppInformation.GetRelease(appName, channel ?? "production");
+        Release? release = await AppInformation.GetRelease(appName, channel ?? Release.DefaultChannel);
         
         if (release is not null)
         {
@@ -106,7 +76,7 @@ public class AppController : ControllerBase
         [FromQuery] string? version = null,
         [FromQuery] string? channel = null)
     {
-        channel ??= "production";
+        channel ??= Release.DefaultChannel;
         Release? release = await AppInformation.GetRelease(appName, channel, version);
         if (release is null)
         {
@@ -127,25 +97,29 @@ public class AppController : ControllerBase
 
         HttpClient client = new();
         string releases = await client.GetStringAsync(manifestUri);
-        var latestRelease = ReleaseEntry.ParseReleaseFile(releases)
-            .OrderByDescending(x => x.Version)
+        var latestReleases = ReleaseEntry.ParseReleaseFile(releases)
+            .GroupBy(x => x.Version)
+            .OrderByDescending(x => x.Key)
             .FirstOrDefault();
-        if (latestRelease is null)
+        if (latestReleases is null)
         {
-            return NotFound("Could not find RELEASES file entry");
-        }
-        
-        Uri? fileUri = await AppInformation.GetFile(appName, channel, latestRelease.Filename, version);
-        if (fileUri is null)
-        {
-            return NotFound();
+            return NotFound("Could not determine latest release from the manifest");
         }
 
-        return Ok(new[]
+        List<string> files = new()
         {
-            fileUri.AbsoluteUri,
             manifestUri.AbsoluteUri
-        });
+        };
+        foreach (var releaseEntry in latestReleases)
+        {
+            Uri? fileUri = await AppInformation.GetFile(appName, channel, releaseEntry.Filename, version);
+            if (fileUri is not null)
+            {
+                files.Add(fileUri.AbsoluteUri);
+            }
+        }
+
+        return Ok(files);
     }
 
     [HttpGet("download-setup/{appName}")]
@@ -154,7 +128,7 @@ public class AppController : ControllerBase
         [FromQuery] string? version = null,
         [FromQuery] string? channel = null)
     {
-        channel ??= "production";
+        channel ??= Release.DefaultChannel;
         Release? release = await AppInformation.GetRelease(appName, channel, version);
         if (release is null)
         {

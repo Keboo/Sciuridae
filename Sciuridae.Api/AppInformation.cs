@@ -58,6 +58,15 @@ public class AppInformation
         return !response.IsError;
     }
 
+    public async Task<bool> DeleteRelease(string appName, string version, string channel)
+    {
+        TableClient tableClient = Client.GetTableClient(Release.TableName);
+        Release? release = await GetRelease(appName, channel, version);
+        if (release is null) return false;
+        var response = await tableClient.DeleteEntityAsync(release.PartitionKey, release.RowKey);
+        return !response.IsError;
+    }
+
     public async Task<Uri?> GetFile(string appName, string channel, string fileName, string? version = null)
     {
         Release? release = await GetRelease(appName, channel, version);
@@ -71,8 +80,8 @@ public class AppInformation
     public async Task<Release?> GetRelease(string appName, string channel, string? version = null)
     {
         Expression<Func<Release, bool>> query = version is null
-            ? x => x.AppName == appName
-            : x => x.AppName == appName && x.Version == version;
+            ? x => x.AppName == appName && x.Channel == channel
+            : x => x.AppName == appName && x.Channel == channel && x.Version == version;
 
         return await GetLatestRelease(query);
     }

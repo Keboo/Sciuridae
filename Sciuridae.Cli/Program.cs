@@ -2,6 +2,7 @@
 using Sciuridae.Cli;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.CommandLine.IO;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -52,25 +53,41 @@ downloadCommand.SetHandler(async (InvocationContext ctx) =>
     }
 
     HttpClient client = new();
-    string latestFiles = await client.GetStringAsync(new Uri(serverUrl, $"App/download/{appName}"));
-    if (JsonSerializer.Deserialize(latestFiles, StringArrayContext.Default.StringArray) is { } fileUrls)
+    try
     {
-        await Parallel.ForEachAsync(fileUrls, async (fileUrl, token) =>
+        string latestFiles = await client.GetStringAsync(new Uri(serverUrl, $"App/download/{appName}"));
+        if (JsonSerializer.Deserialize(latestFiles, StringArrayContext.Default.StringArray) is { } fileUrls)
         {
-            using Stream urlStream = await client.GetStreamAsync(fileUrl);
-            string outputFile = Path.GetFileName(fileUrl);
-            if (outputDirectory is not null)
+            await Parallel.ForEachAsync(fileUrls, ctx.GetCancellationToken(), async (fileUrl, token) =>
             {
-                outputDirectory.Create();
-                outputFile = Path.Combine(outputDirectory.FullName, outputFile);
-            }
-            using Stream fileStream = File.OpenWrite(outputFile);
-            await urlStream.CopyToAsync(fileStream);
-        });
+                try
+                {
+                    using Stream urlStream = await client.GetStreamAsync(fileUrl, token);
+                    string outputFile = Path.GetFileName(fileUrl);
+                    if (outputDirectory is not null)
+                    {
+                        outputDirectory.Create();
+                        outputFile = Path.Combine(outputDirectory.FullName, outputFile);
+                    }
+                    using Stream fileStream = File.OpenWrite(outputFile);
+                    await urlStream.CopyToAsync(fileStream, token);
+                }
+                catch(Exception e)
+                {
+                    ctx.Console.Error.WriteLine($"Failed to download {fileUrl}{Environment.NewLine}{e}");
+                    ctx.ExitCode = 1;
+                }
+            });
+        }
+        else
+        {
+            ctx.Console.WriteLine("No files found to download");
+        }
     }
-    else
+    catch(Exception e)
     {
-        ctx.Console.WriteLine("No files found to download");
+        ctx.Console.Error.WriteLine(e.ToString());
+        ctx.ExitCode = 1;
     }
 });
 

@@ -2,16 +2,17 @@
 
 public record class Release : BaseTableEntity
 {
+    public const string DefaultChannel = "production";
     public const string TableName = "Releases";
     
     public Release()
     { }
     
-    public Release(string appName, string tag, string channel, string version, string setupFile)
+    public Release(string appName, string tag, string? channel, string version, string setupFile)
         : base(appName)
     {
         Tag = tag;
-        Channel = channel;
+        Channel = channel ?? DefaultChannel;
         Version = version;
         SetupFile = setupFile;
     }
