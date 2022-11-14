@@ -59,6 +59,7 @@ jobs:
       - uses: fastify/github-action-merge-dependabot@v3.5.0
 
   deploy:
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     needs: build
     environment:
