@@ -65,7 +65,7 @@ jobs:
           checkName: CodeQL
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - uses: fastify/github-action-merge-dependabot@v3.5.1
+      - uses: fastify/github-action-merge-dependabot@v3.5.2
         if: steps.wait-for-codeql.outputs.conclusion == 'success'
 
   deploy:
