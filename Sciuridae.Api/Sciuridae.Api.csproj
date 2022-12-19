@@ -12,7 +12,7 @@
     <PackageReference Include="Azure.Identity" Version="1.8.0" />
     <PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.1" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.25.10" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.25.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
