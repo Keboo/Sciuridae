@@ -11,7 +11,7 @@
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageReference Include="Azure.Identity" Version="1.8.2" />
     <PackageReference Include="Clowd.Squirrel" Version="2.9.42" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.4" />
     <PackageReference Include="Microsoft.Identity.Web" Version="2.7.0" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.7.0" />
